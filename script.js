@@ -1,102 +1,85 @@
 $(document).ready(function () {
-  const header = $('#main-header');
-  const postsList = $('#posts-list');
-  const showingCount = $('#showing-count');
-  const totalCount = $('#total-count');
-  const showPerPage = $('#show-per-page');
-  const sortOrder = $('#sort-order');
-  const prevPageButton = $('#prev-page');
-  const nextPageButton = $('#next-page');
-
-  let currentPage = 1;
-  let totalPages = 0;
-  let perPage = 10;
-  let sort = '-published_at';
-  let lastScrollTop = 0;
-  $(window).on('scroll', function () {
-    let scrollTop = $(this).scrollTop();
-    if (scrollTop > lastScrollTop) {
-      header.css('top', '-100px');
-    } else {
-      header.css('top', '0');
-    }
-    lastScrollTop = scrollTop;
-  });
-  function fetchPosts() {
-    const proxyUrl = 'https://api.allorigins.win/raw?url=';
-    const apiUrl = `${proxyUrl}https://suitmedia-backend.suitdev.com/api/ideas?page[number]=${currentPage}&page[size]=${perPage}&append[]=small_image&append[]=medium_image&sort=${sort}`;
-
-    fetch(apiUrl)
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error(`Network response was not ok: ${response.statusText}`);
-        }
-        return response.json();
-      })
-      .then((data) => {
-        console.log('Fetched Data:', data);
-
-        renderPosts(data.data);
-        totalCount.text(data.meta.total);
-        totalPages = Math.ceil(data.meta.total / perPage);
-
-        const startItem = (currentPage - 1) * perPage + 1;
-        const endItem = Math.min(currentPage * perPage, data.meta.total);
-        showingCount.text(`${startItem} - ${endItem}`);
-
-        prevPageButton.prop('disabled', currentPage === 1);
-        nextPageButton.prop('disabled', currentPage === totalPages);
-      })
-      .catch((error) => console.error('Error fetching data:', error));
-  }
-
-  function renderPosts(posts) {
-    postsList.empty();
-
-    posts.forEach((post) => {
-      
-      console.log('Rendering Post:', post);
-
-      const postCard = `
-              <div class="col-md-4">
-                  <div class="card post-card mb-4">
-                      <img src="${post.small_image}" class="card-img-top" alt="${post.title}">
-                      <div class="card-body">
-                          <h5 class="card-title">${post.title}</h5>
-                          <p class="card-text">${post.summary}</p>
-                      </div>
-                  </div>
-              </div>
-          `;
-      postsList.append(postCard);
+  function loadPosts(page = 1, perPage = 10, sortOrder = '-published_at') {
+    const totalPosts = 100; // Assume we have 100 posts
+    const posts = generateSamplePosts(totalPosts);
+    
+    posts.sort((a, b) => {
+      if (sortOrder === '-published_at') {
+        return new Date(b.published_at) - new Date(a.published_at);
+      } else {
+        return new Date(a.published_at) - new Date(b.published_at);
+      }
     });
+
+    const startIndex = (page - 1) * perPage;
+    const endIndex = startIndex + perPage;
+    const paginatedPosts = posts.slice(startIndex, endIndex);
+
+
+    $('#posts-list').empty();
+
+
+    paginatedPosts.forEach((post) => {
+      $('#posts-list').append(`
+        <div class="col-md-3 col-sm-6 mb-3">
+          <div class="card">
+            <img src="${post.image}" class="card-img-top" alt="...">
+            <div class="card-body">
+              <h5 class="card-title">${post.title}</h5>
+              <p class="card-text">${post.content}</p>
+            </div>
+          </div>
+        </div>
+      `);
+    });
+
+    $('#showing-count').text(`${startIndex + 1} - ${Math.min(endIndex, totalPosts)}`);
+    $('#total-count').text(totalPosts);
+
+
+    $('#prev-page').prop('disabled', page === 1);
+    $('#next-page').prop('disabled', endIndex >= totalPosts);
   }
 
-  // Event listeners
-  showPerPage.on('change', function () {
-    perPage = parseInt(this.value);
-    currentPage = 1;
-    fetchPosts();
-  });
-
-  sortOrder.on('change', function () {
-    sort = this.value;
-    currentPage = 1;
-    fetchPosts();
-  });
-
-  prevPageButton.on('click', function () {
-    if (currentPage > 1) {
-      currentPage--;
-      fetchPosts();
+  // Function to generate sample posts
+  function generateSamplePosts(count) {
+    const posts = [];
+    const images = ['./img/gambar1.jpeg', './img/gambar2.jpeg', './img/gambar3.jpeg'];
+    for (let i = 0; i < count; i++) {
+      posts.push({
+        title: `Post ${i + 1}`,
+        content: `This is the content of post ${i + 1}.`,
+        image: images[i % images.length],
+        published_at: new Date(Date.now() - i * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
+      });
     }
+    return posts;
+  }
+
+  loadPosts();
+  
+  $('#show-per-page').change(function () {
+    const perPage = parseInt($(this).val());
+    loadPosts(1, perPage, $('#sort-order').val());
+  });
+ 
+  $('#sort-order').change(function () {
+    const sortOrder = $(this).val();
+    loadPosts(1, parseInt($('#show-per-page').val()), sortOrder);
   });
 
-  nextPageButton.on('click', function () {
-    if (currentPage < totalPages) {
-      currentPage++;
-      fetchPosts();
-    }
+
+  $('#prev-page').click(function () {
+    const perPage = parseInt($('#show-per-page').val());
+    const sortOrder = $('#sort-order').val();
+    const currentPage = Math.ceil(parseInt($('#showing-count').text().split(' ')[0]) / perPage);
+    loadPosts(currentPage - 1, perPage, sortOrder);
   });
-  fetchPosts();
+
+  $('#next-page').click(function () {
+    const perPage = parseInt($('#show-per-page').val());
+    const sortOrder = $('#sort-order').val();
+    const currentPage = Math.ceil(parseInt($('#showing-count').text().split(' ')[2]) / perPage);
+    loadPosts(currentPage + 1, perPage, sortOrder);
+  });
 });
