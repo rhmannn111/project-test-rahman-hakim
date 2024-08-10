@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Suitmedia Test</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+
+    <header id="main-header" class="fixed-top bg-warning shadow-sm">
+      <nav class="navbar navbar-expand-lg navbar-light bg-transparent">
+        <div class="container">
+          <div class="logo">
+            <img src="./img/suitmedia.png" alt="logo" width="100px">
+          </div>
+          <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ms-auto">
+              <li class="nav-item">
+                <a class="nav-link" href="work.html">Work</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="about.html">About</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="services.html">Services</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active" href="ideas.html">Ideas</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="careers.html">Careers</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" href="contact.html">Contact</a>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </nav>
+    </header>
+
+    <section class="banner bg-white text-dark text-center">
+      <div class="banner-text py-5  " style="background-image: url('./img/suitmedia.png'); background-size: cover; background-attachment: fixed; position: relative">
+        <div class="container mt-5 d-flex align-items-center justify-content-center flex-column">
+          <h1 class="display-4">Ideas</h1>
+          <p class="lead">Where all our great things begin</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="posts-container container my-5">
+      <div class="row mb-3 align-items-center">
+        <div class="col-md-6">
+          <p class="mb-0">Showing <span id="showing-count">1 - 10</span> of <span id="total-count">100</span></p>
+        </div>
+        <div class="col-md-6 text-md-end">
+          <select id="show-per-page" class="form-select d-inline-block w-auto">
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="50">50</option>
+          </select>
+          <select id="sort-order" class="form-select d-inline-block w-auto ms-2">
+            <option value="-published_at">Newest</option>
+            <option value="published_at">Oldest</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="d-flex flex-row" id="posts-list">
+       
+      </div>
+
+      <div class="row mt-3">
+        <div class="col text-center">
+          <button id="prev-page" class="btn btn-primary me-2" disabled>Previous</button>
+          <button id="next-page" class="btn btn-primary">Next</button>
+        </div>
+      </div>
+    </section>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+  </body>
+</html>
